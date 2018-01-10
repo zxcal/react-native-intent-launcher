@@ -82,6 +82,44 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
         }
     }
 
+    public void sendBroadcast(ReadableMap params, final Promise promise) {
+        this.promise = promise;
+        try {
+            Intent intent = new Intent();
+
+            if (params.hasKey(ATTR_CLASS_NAME)) {
+                ComponentName cn;
+                if (params.hasKey(ATTR_PACKAGE_NAME)) {
+                    cn = new ComponentName(params.getString(ATTR_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME));
+                } else {
+                    cn = new ComponentName(getReactApplicationContext(), params.getString(ATTR_CLASS_NAME));
+                }
+                intent.setComponent(cn);
+            }
+            if (params.hasKey(ATTR_ACTION)) {
+                intent.setAction(params.getString(ATTR_ACTION));
+            }
+            if (params.hasKey(ATTR_DATA)) {
+                intent.setData(Uri.parse(params.getString(ATTR_DATA)));
+            }
+            if (params.hasKey(ATTR_TYPE)) {
+                intent.setType(params.getString(ATTR_TYPE));
+            }
+            if (params.hasKey(TAG_EXTRA)) {
+                intent.putExtras(Arguments.toBundle(params.getMap(TAG_EXTRA)));
+            }
+            if (params.hasKey(ATTR_FLAGS)) {
+                intent.addFlags(params.getInt(ATTR_FLAGS));
+            }
+            if (params.hasKey(ATTR_CATEGORY)) {
+                intent.addCategory(params.getString(ATTR_CATEGORY));
+            }
+            getReactApplicationContext().sendBroadcast(intent); // 暂时使用当前应用的任务栈
+        } catch (Exception ex) {
+            promise.reject("ERROR", "Could not open intent", ex);
+        }
+    }
+
     @Override
     public void onNewIntent(Intent intent) {
     }
