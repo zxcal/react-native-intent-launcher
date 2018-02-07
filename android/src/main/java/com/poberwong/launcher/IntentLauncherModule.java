@@ -82,6 +82,7 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
         }
     }
 
+    @ReactMethod
     public void sendBroadcast(ReadableMap params, final Promise promise) {
         this.promise = promise;
         try {
